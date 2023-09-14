@@ -1,0 +1,26 @@
+/* Update the background properties for the whole page */
+body {
+    background-image: url('games/balloonPop/assets/background.jpg');
+    background-size: auto;  /* Resetting this to auto */
+    background-repeat: repeat;  /* Make the background image repeat */
+    background-attachment: fixed;
+}
+
+/* Center the header text */
+header h1 {
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+}
+
+/* Style the game container */
+#game-container {
+    width: 800px;
+    height: 600px;
+    margin: 20px auto;
+    border: 3px solid #555;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px #000;
+    background-color: rgba(255, 255, 255, 0.8);  /* Semi-transparent background */
+}
