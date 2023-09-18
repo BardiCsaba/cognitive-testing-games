@@ -22,6 +22,9 @@ function initializeGame(params) {
 			import('./games/balloonPop/index.js')
 				.then(gameModule => {
 					gameModule.initialize(params);
+				})
+				.catch(err => {
+					console.error("Failed to load the game module:", err);
 				});
 			break;
 		default:
