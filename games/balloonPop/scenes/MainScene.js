@@ -77,8 +77,8 @@ function create() {
         loop: true
     });
 
-    // Handle clicking on balloons
-    this.input.on('pointerdown', pointer => popBalloonOnPointerDown(this, pointer));
+// Handle clicking on balloons
+this.input.on('pointerdown', pointer => popBalloonOnPointerDown(this, pointer));
 }
 
 // Function to update counter
@@ -126,9 +126,10 @@ function calculateSpeed() {
 // Check for balloon pop when clicked
 function popBalloonOnPointerDown(scene, pointer) {
     const clickedBalloons = balloons.getChildren().filter(balloon => 
+        balloon.active && 
         Phaser.Geom.Intersects.RectangleToRectangle(balloon.getBounds(), new Phaser.Geom.Rectangle(pointer.x, pointer.y, 1, 1))
     );
-
+    
     if (clickedBalloons.length > 0) {
         // Pop the most recently added balloon (last in the list)
         popBalloon(scene, clickedBalloons[clickedBalloons.length - 1]);
@@ -137,6 +138,7 @@ function popBalloonOnPointerDown(scene, pointer) {
 
 // Handle balloon popping
 function popBalloon(scene, balloon) {
+    balloon.active = false;
     const tweensConfig = {
         duration: 100,
         yoyo: true,
@@ -150,6 +152,7 @@ function popBalloon(scene, balloon) {
 
         // If life points run out, game over
         if (lifePoints <= 0) {
+            scene.registry.set('finalScore', score);
             scene.scene.start('EndScene');
         }
 
@@ -170,7 +173,7 @@ function popBalloon(scene, balloon) {
     scene.tweens.add({
         targets: balloon,
         ...tweensConfig
-    });
+    }); 
 
     // Update score display
     scoreText.setText(`Pont: ${score}`);
@@ -186,6 +189,7 @@ function updateLifeBar() {
 
 // Reset balloon position and type
 function resetBalloon(balloon) {
+    balloon.active = true;
     const position = generateUniquePosition();
     balloon.x = position.x;
     balloon.y = 650;
