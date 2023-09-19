@@ -12,6 +12,8 @@ let lifePoints = 100;
 let lifeBar;
 let lifeText;
 let counterText;
+let params;
+let level;
 
 function preload() {
     this.load.setBaseURL('games/balloonPop/assets/');
@@ -19,6 +21,10 @@ function preload() {
 }
 
 function create() {
+    // Get game parameters
+    params = this.registry.get('params');
+    level = params ? params.level : 1; // Default to level 1 if not specified
+
     this.add.image(400, 300, 'background');
 
     // Add background shade for better visibility
@@ -32,7 +38,7 @@ function create() {
     this.add.text(30, 280, '2. Kerüld a fekete léggömböket!', { fontSize: '20px', fill: '#fff' });
     this.add.text(30, 320, '3. A játéknak vége, ha az életpontod eléri a nullát.', { fontSize: '20px', fill: '#fff' });
     this.add.text(30, 360, '4. A játékidő 100 másodperc.', { fontSize: '20px', fill: '#fff' });
-    
+
     // Create a button with graphics
     const button = this.add.graphics();
     button.fillStyle(0x328BA8, 1);
@@ -75,6 +81,9 @@ function create() {
     lifeText = this.add.text(520, 20, 'Élet:', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', });
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', });
     counterText = this.add.text(265, 20, 'Idő: 100', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', });
+
+    // Add level text
+    this.add.text(10, 560, `Szint: ${level}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
 }
 
 function update() {

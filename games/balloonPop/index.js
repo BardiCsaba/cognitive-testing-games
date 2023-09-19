@@ -14,5 +14,6 @@ export function initialize(params) {
 
     // Create the Phaser game instance
     let game = new Phaser.Game(config);
+    game.registry.set('params', params);
     game.scene.start('StartScene');
 }

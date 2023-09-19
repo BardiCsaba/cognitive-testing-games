@@ -37,7 +37,7 @@ function mockFetchParams() {
 	return {
 		gameName: 'balloonPop',
 		gameTitle: 'Lufi pukkasztó',
-		difficulty: '5'
+		level: 5,
 	};
 }
 

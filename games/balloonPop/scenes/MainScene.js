@@ -5,13 +5,11 @@ export const MainScene = {
     update,
 };
 
-// Constants for gameplay and maximum number of balloons
-const MAX_BALLOONS = 2;
-const MAX_SPEED = 6;
-const MIN_SPEED = 4;
+// Constants
 const balloonTypes = ['balloon_red', 'balloon_green', 'balloon_blue', 'balloon_orange', 'balloon_black'];
 
 // Initialize game variables
+let maxBalloons;
 let balloons;
 let score = 0;
 let scoreText;
@@ -21,6 +19,8 @@ let lifeBar;
 let lifeText;
 let counter = 100;
 let counterText;
+let params;
+let level;
 
 // Preload assets
 function preload() {
@@ -31,6 +31,10 @@ function preload() {
 
 // Create scene and spawn balloons
 function create() {
+    // Get game parameters
+    params = this.registry.get('params');
+    level = params ? params.level : 1; // Default to level 1 if not specified
+
     // Initialize background
     this.add.image(400, 300, 'background');
 
@@ -38,8 +42,12 @@ function create() {
     balloons = this.add.group();
     this.input.topOnly = true;
 
+    // Determine max number of balloons and speed factor based on level
+    maxBalloons = 2 + Math.floor(level / 5);  // Starts at 2, increases by 1 every 5 levels
+    console.log(`Level: ${level}, maxBalloons: ${maxBalloons}`);
+    
     // Spawn initial set of balloons
-    for (let i = 0; i < MAX_BALLOONS; i++) {
+    for (let i = 0; i < maxBalloons; i++) {
         spawnBalloon(this);
     }				
 
@@ -57,6 +65,9 @@ function create() {
     lifeText = this.add.text(520, 20, 'Élet:', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     
+    // Add level text
+    this.add.text(10, 560, `Szint: ${level}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
+
     // Update counter every second
     counterText = this.add.text(265, 20, 'Idő: 100', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     this.time.addEvent({
@@ -102,48 +113,60 @@ function spawnBalloon(scene) {
     const randomType = Phaser.Math.RND.pick(balloonTypes);
     const newBalloon = scene.add.sprite(position.x, position.y, randomType);
     newBalloon.setScale(0.3);
-    newBalloon.speed = Phaser.Math.Between(MIN_SPEED, MAX_SPEED);
+    newBalloon.speed = calculateSpeed();
     balloons.add(newBalloon);
+}
+
+function calculateSpeed() {
+    let minSpeed = 2 + (level - 1) * 0.2;  // Starts at 2, increases by 0.2 for each level above 1
+    let maxSpeed = minSpeed + 2;  // Max speed is always 2 units higher than min speed
+    return Phaser.Math.Between(minSpeed, maxSpeed);   
 }
 
 // Check for balloon pop when clicked
 function popBalloonOnPointerDown(scene, pointer) {
-    const clickedBalloon = balloons.getChildren().find(balloon => 
+    const clickedBalloons = balloons.getChildren().filter(balloon => 
         Phaser.Geom.Intersects.RectangleToRectangle(balloon.getBounds(), new Phaser.Geom.Rectangle(pointer.x, pointer.y, 1, 1))
     );
 
-    if (clickedBalloon) {
-        popBalloon(scene, clickedBalloon);
+    if (clickedBalloons.length > 0) {
+        // Pop the most recently added balloon (last in the list)
+        popBalloon(scene, clickedBalloons[clickedBalloons.length - 1]);
     }
 }
 
 // Handle balloon popping
 function popBalloon(scene, balloon) {
-    const originalScale = 0.3;
     const tweensConfig = {
         duration: 100,
         yoyo: true,
         onComplete: () => resetBalloon(balloon)
     };
 
-    // Check balloon type and update score accordingly
+    // Handle the black balloon differently
     if (balloon.texture.key === 'balloon_black') {
-        lifePoints -= 10;  
+        lifePoints -= 10;
+        updateLifeBar();
+
+        // If life points run out, game over
         if (lifePoints <= 0) {
-            // Game over
             scene.scene.start('EndScene');
         }
-        updateLifeBar();
-        tweensConfig.angle = 360;
-        tweensConfig.duration = 500;
-        tweensConfig.yoyo = false;
+
+        Object.assign(tweensConfig, {
+            angle: 360,
+            duration: 500,
+            yoyo: false
+        });
     } else {
+        // For regular balloons
         score += 10;
-        tweensConfig.scaleX = originalScale + 0.05;
-        tweensConfig.scaleY = originalScale + 0.05;
+        Object.assign(tweensConfig, {
+            scaleX: 0.35,
+            scaleY: 0.35
+        });
     }
 
-    // Add tween to balloon
     scene.tweens.add({
         targets: balloon,
         ...tweensConfig
@@ -168,27 +191,43 @@ function resetBalloon(balloon) {
     balloon.y = 650;
     balloon.setTexture(Phaser.Math.RND.pick(balloonTypes));
     balloon.setAngle(0);
+    balloon.speed = calculateSpeed();
+    console.log(`speed: ${balloon.speed} | type: ${balloon.texture.key} | x: ${balloon.x}`);
 }
 
 // Generate a unique position for a new balloon
 function generateUniquePosition() {
-    let position;
-    do {
-        position = {
-            x: Phaser.Math.Between(100, 700),
-            y: 600
-        };
-    } while (doesOverlap(position));
-
-    occupiedPositions.push(position);
-    if (occupiedPositions.length > MAX_BALLOONS) {
-        occupiedPositions.shift();
+    const segmentWidth = 100; // Make this as wide as a balloon + desired minimum spacing
+    const segments = Array.from({length: Math.floor((700 - 100) / segmentWidth)}, (_, i) => ({
+        xStart: 100 + i * segmentWidth,
+        xEnd: 100 + (i + 1) * segmentWidth - 1,
+        occupied: false
+    }));
+    const availableSegments = segments.filter(segment => !segment.occupied);
+    
+    if (availableSegments.length === 0) {
+        return null; // No space left to spawn new balloons
     }
 
-    return position;
-}
+    // Randomly select an unoccupied segment
+    const selectedSegment = Phaser.Math.RND.pick(availableSegments);
+    selectedSegment.occupied = true;
 
-// Check if a new position overlaps with existing positions
-function doesOverlap(newPosition) {
-    return occupiedPositions.some(pos => Math.abs(pos.x - newPosition.x) < 100);
+    // Generate a position within this segment
+    const position = {
+        x: Phaser.Math.Between(selectedSegment.xStart, selectedSegment.xEnd),
+        y: 600
+    };
+
+    // Optionally: Remove the oldest balloon to free up space
+    if (occupiedPositions.length > maxBalloons) {
+        const oldestPosition = occupiedPositions.shift();
+        const oldSegment = segments.find(segment => oldestPosition.x >= segment.xStart && oldestPosition.x <= segment.xEnd);
+        if (oldSegment) {
+            oldSegment.occupied = false;
+        }
+    }
+
+    occupiedPositions.push(position);
+    return position;
 }
