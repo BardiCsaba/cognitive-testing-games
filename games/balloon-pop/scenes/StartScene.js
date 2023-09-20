@@ -6,7 +6,6 @@ export const StartScene = {
 };
 
 // Initialize variables
-let score = 0;
 let scoreText;
 let lifePoints = 100;  
 let lifeBar;
@@ -16,7 +15,7 @@ let params;
 let level;
 
 function preload() {
-    this.load.setBaseURL('games/balloonPop/assets/');
+    this.load.setBaseURL('games/balloon-pop/assets/');
     this.load.image('background', 'background.png');
 }
 
@@ -82,8 +81,14 @@ function create() {
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', });
     counterText = this.add.text(265, 20, 'Idő: 100', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', });
 
-    // Add level text
-    this.add.text(10, 560, `Szint: ${level}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
+        // Add level text
+        this.add.text(10, 560, `Szint: ${level}`, {
+            fontSize: '32px', 
+            fill: '#fff', 
+            fontStyle: 'bold',
+            stroke: '#666',
+            strokeThickness: 2
+       });
 }
 
 function update() {

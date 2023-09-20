@@ -6,11 +6,11 @@ export const EndScene = {
 };
 
 let finalScore;
-let level;
 let params;
+let level;
 
 function preload() {
-    this.load.setBaseURL('games/balloonPop/assets/');
+    this.load.setBaseURL('games/balloon-pop/assets/');
     this.load.image('background', 'background.png');
 }
 

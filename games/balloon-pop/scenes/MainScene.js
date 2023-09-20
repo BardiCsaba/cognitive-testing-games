@@ -24,9 +24,10 @@ let level;
 
 // Preload assets
 function preload() {
-    this.load.setBaseURL('games/balloonPop/assets/');
+    this.load.setBaseURL('games/balloon-pop/assets/');
     this.load.image('background', 'background.png');
     balloonTypes.forEach(type => this.load.image(type, `${type}.png`));
+    this.load.spritesheet('explosion', 'explosion.png', { frameWidth: 64, frameHeight: 64 });
 }
 
 // Create scene and spawn balloons
@@ -66,7 +67,13 @@ function create() {
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     
     // Add level text
-    this.add.text(10, 560, `Szint: ${level}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
+    this.add.text(10, 560, `Szint: ${level}`, {
+         fontSize: '32px', 
+         fill: '#fff', 
+         fontStyle: 'bold',
+         stroke: '#666',
+         strokeThickness: 2
+    });
 
     // Update counter every second
     counterText = this.add.text(265, 20, 'Idő: 100', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
@@ -77,8 +84,16 @@ function create() {
         loop: true
     });
 
-// Handle clicking on balloons
-this.input.on('pointerdown', pointer => popBalloonOnPointerDown(this, pointer));
+    // Add explosion animation
+    this.anims.create({
+        key: 'explode',
+        frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 15 }),
+        frameRate: 20,
+        hideOnComplete: true
+    });    
+
+    // Handle clicking on balloons
+    this.input.on('pointerdown', pointer => popBalloonOnPointerDown(this, pointer));
 }
 
 // Function to update counter
@@ -138,17 +153,18 @@ function popBalloonOnPointerDown(scene, pointer) {
 
 // Handle balloon popping
 function popBalloon(scene, balloon) {
-    balloon.active = false;
-    const tweensConfig = {
-        duration: 100,
-        yoyo: true,
-        onComplete: () => resetBalloon(balloon)
-    };
-
     // Handle the black balloon differently
     if (balloon.texture.key === 'balloon_black') {
         lifePoints -= 10;
         updateLifeBar();
+        
+        // Trigger the explosion animation at the balloon's position
+        let explosion = scene.add.sprite(balloon.x, balloon.y, 'explosion');
+        explosion.setScale(1.5);
+        explosion.play('explode');
+        explosion.once('animationcomplete', () => {
+            explosion.destroy();
+        });
 
         // If life points run out, game over
         if (lifePoints <= 0) {
@@ -156,24 +172,21 @@ function popBalloon(scene, balloon) {
             scene.scene.start('EndScene');
         }
 
-        Object.assign(tweensConfig, {
-            angle: 360,
-            duration: 500,
-            yoyo: false
-        });
+        resetBalloon(balloon);
+
     } else {
-        // For regular balloons
         score += 10;
-        Object.assign(tweensConfig, {
+        
+        // Tweening effects for other balloons
+        scene.tweens.add({
+            targets: balloon,
+            duration: 100,
             scaleX: 0.35,
-            scaleY: 0.35
+            scaleY: 0.35,
+            yoyo: true,
+            onComplete: () => resetBalloon(balloon)
         });
     }
-
-    scene.tweens.add({
-        targets: balloon,
-        ...tweensConfig
-    }); 
 
     // Update score display
     scoreText.setText(`Pont: ${score}`);
