@@ -27,10 +27,10 @@ function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'balloon-pop', 
+		gameName: 'cosmic-sequence', 
 		//cosmic-sequence
 		//balloon-pop
-		gameTitle: 'Lufi pukkasztó', 
+		gameTitle: 'Aszteroida sorrend', 
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
 		level: 5,
