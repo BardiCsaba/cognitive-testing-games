@@ -8,19 +8,29 @@ export const MainScene = {
 // Constants
 const balloonTypes = ['balloon_red', 'balloon_green', 'balloon_blue', 'balloon_orange', 'balloon_black'];
 
-// Initialize game variables
-let maxBalloons;
+// Parameters
+let MAX_BALLOONS;
+let MIN_SPEED;
+let MAX_SPEED;
+let MAX_HEALTH_POINTS;
+let LEVEL;
+let GAME_TIME;
+
+// Game variables
+let params;
+let gameParams;
 let balloons;
 let score = 0;
-let scoreText;
+let counter;
 let occupiedPositions = [];
-let lifePoints = 100;  
+let lifePoints;
+
+// Game objects
 let lifeBar;
 let lifeText;
-let counter = 100;
+let scoreText;
 let counterText;
-let params;
-let level;
+
 
 // Preload assets
 function preload() {
@@ -30,11 +40,27 @@ function preload() {
     this.load.spritesheet('explosion', 'explosion.png', { frameWidth: 64, frameHeight: 64 });
 }
 
+function getGameParameters() {
+    params = this.registry.get('params');
+    gameParams = this.registry.get('gameParams');
+    
+    LEVEL = params ? params.level : 1; 
+    MAX_BALLOONS = gameParams.maxBalloons;  
+    MIN_SPEED = gameParams.minSpeed;  
+    MAX_SPEED = gameParams.maxSpeed;
+    MAX_HEALTH_POINTS = gameParams.maxHealthPoints;
+    GAME_TIME = gameParams.gameTime;
+
+    lifePoints = MAX_HEALTH_POINTS;
+    counter = GAME_TIME;
+
+    console.log(`Level: ${LEVEL}\nMax balloons: ${MAX_BALLOONS}\nMin speed: ${MIN_SPEED}\nMax speed: ${MAX_SPEED}\nHealth points: ${MAX_HEALTH_POINTS}\nGame time: ${GAME_TIME}`);
+}
+
 // Create scene and spawn balloons
 function create() {
     // Get game parameters
-    params = this.registry.get('params');
-    level = params ? params.level : 1; // Default to level 1 if not specified
+    getGameParameters.call(this);
 
     // Initialize background
     this.add.image(400, 300, 'background');
@@ -42,13 +68,9 @@ function create() {
     // Initialize balloons group
     balloons = this.add.group();
     this.input.topOnly = true;
-
-    // Determine max number of balloons and speed factor based on level
-    maxBalloons = 2 + Math.floor(level / 5);  // Starts at 2, increases by 1 every 5 levels
-    console.log(`Level: ${level}, maxBalloons: ${maxBalloons}`);
     
     // Spawn initial set of balloons
-    for (let i = 0; i < maxBalloons; i++) {
+    for (let i = 0; i < MAX_BALLOONS; i++) {
         spawnBalloon(this);
     }				
 
@@ -67,11 +89,11 @@ function create() {
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     
     // Add level text
-    this.add.text(10, 560, `Szint: ${level}`, {
-         fontSize: '32px', 
+    this.add.text(10, 560, `Szint: ${LEVEL}`, {
+         fontSize: '28px',
          fill: '#fff', 
          fontStyle: 'bold',
-         stroke: '#666',
+         stroke: '#888',
          strokeThickness: 2
     });
 
@@ -133,9 +155,7 @@ function spawnBalloon(scene) {
 }
 
 function calculateSpeed() {
-    let minSpeed = 2 + (level - 1) * 0.2;  // Starts at 2, increases by 0.2 for each level above 1
-    let maxSpeed = minSpeed + 2;  // Max speed is always 2 units higher than min speed
-    return Phaser.Math.Between(minSpeed, maxSpeed);   
+    return Phaser.Math.Between(MIN_SPEED, MAX_SPEED);   
 }
 
 // Check for balloon pop when clicked
@@ -237,7 +257,7 @@ function generateUniquePosition() {
     };
 
     // Optionally: Remove the oldest balloon to free up space
-    if (occupiedPositions.length > maxBalloons) {
+    if (occupiedPositions.length > MAX_BALLOONS) {
         const oldestPosition = occupiedPositions.shift();
         const oldSegment = segments.find(segment => oldestPosition.x >= segment.xStart && oldestPosition.x <= segment.xEnd);
         if (oldSegment) {
