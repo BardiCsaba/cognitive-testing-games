@@ -30,23 +30,23 @@ function create() {
 
     // Create a start button
     const button = this.add.graphics();
-    button.fillStyle(0xCC0000, 1);
+    button.fillStyle(0xCC4444, 1);
     button.fillRoundedRect(300, 425, 200, 50, 16);
     button.setInteractive(new Phaser.Geom.Rectangle(300, 425, 200, 50), Phaser.Geom.Rectangle.Contains);
 
-    const buttonText = this.add.text(400, 450, 'Start', { fontSize: '32px', fill: '#fff' });
+    const buttonText = this.add.text(400, 450, 'Start', { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
     buttonText.setOrigin(0.5, 0.5);
 
     // Hover effect for the button
     button.on('pointerover', () => {
         button.clear();
-        button.fillStyle(0xCC4500, 1);
+        button.fillStyle(0xDD5555, 1);
         button.fillRoundedRect(300, 425, 200, 50, 16);
     });
 
     button.on('pointerout', () => {
         button.clear();
-        button.fillStyle(0xCC0000, 1);
+        button.fillStyle(0xCC4444, 1);
         button.fillRoundedRect(300, 425, 200, 50, 16);
     });
 

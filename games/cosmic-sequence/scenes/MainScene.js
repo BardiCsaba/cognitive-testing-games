@@ -31,6 +31,7 @@ let messageText;
 let healthText;
 let background1;
 let background2;
+let heart;
 
 function preload() {
     this.load.setBaseURL('games/cosmic-sequence/assets/');
@@ -40,6 +41,7 @@ function preload() {
     this.load.image('asteroid', 'asteroid.png');
     this.load.image('checkmark', 'checkmark.png');
     this.load.image('cross', 'cross.png');
+    this.load.image('heart', 'heart.png');
     this.load.spritesheet('explosion', 'explosion.png', { frameWidth: 64, frameHeight: 64 });
 }
 
@@ -84,11 +86,13 @@ function create() {
     cross = this.add.image(400, 70, 'cross')
         .setVisible(false)
         .setScale(0.15);
+    heart = this.add.image(650, 60, 'heart')
+        .setScale(0.15)
 
     // Add level text
     this.add.text(10, 560, `Szint: ${LEVEL}`, { fontSize: '28px', fill: '#fff', fontStyle: 'bold',});
     // Add Health Points text field
-    healthText = this.add.text(50, 100, `Élet: ${healthPoints}/${MAX_HEALTH_POINTS}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
+    healthText = this.add.text(680, 50, `${healthPoints}/${MAX_HEALTH_POINTS}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
 
 
     // Add explosion animation
@@ -217,7 +221,7 @@ function spawnAsteroid(number, x, y) {
                 cross.setVisible(true);
 
                 healthPoints -= 1;
-                healthText.setText(`Élet: ${healthPoints}`);
+                healthText.setText(`${healthPoints}/${MAX_HEALTH_POINTS}`);
 
                 // Check if health points drop to zero
                 if (healthPoints <= 0) {
