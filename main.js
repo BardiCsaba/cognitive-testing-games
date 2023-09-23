@@ -27,12 +27,14 @@ function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'cosmic-sequence', 
+		gameName: 'number-repeating', 
 		//cosmic-sequence
 		//balloon-pop
-		gameTitle: 'Aszteroida sorrend', 
+		//number-repeating
+		gameTitle: 'Számismétlés', 
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
+		//Számismétlés
 		level: 5,
 	};
 }
