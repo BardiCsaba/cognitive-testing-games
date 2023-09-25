@@ -6,7 +6,8 @@ export const MainScene = {
 };
 
 // Game variables
-let currentRound = 1;
+let currentRound;
+let totalRounds = 5;
 let inputEnabled = false;
 let numberSequence = [];
 let inputSequence = [];
@@ -14,19 +15,8 @@ let currentIndex = 0;
 
 // Game objects
 let inputDisplay;
-
-const retroStyle = {
-    fontSize: '26px',
-    fill: '#A8FF98',  // Retro greenish color
-    fontFamily: 'Courier New',
-    shadow: {
-        offsetX: 0,
-        offsetY: 0,
-        color: '#A8FF98',  // Glow effect
-        blur: 8,
-        fill: true
-    }
-};
+let retroStyle;
+let roundText;
 
 function preload() {
     this.load.setBaseURL('games/number-repeating/assets/');
@@ -39,9 +29,12 @@ function preload() {
 }
 
 function create() {
-    this.add.image(400, 300, 'background').setScale(1.7);
+    retroStyle = this.registry.get('retrostyle');
+    currentRound = 1;
 
-    this.add.text(400, 50, 'Listen to the sequence:', retroStyle).setFontSize('32px').setOrigin(0.5);
+    this.add.image(400, 300, 'background').setScale(1.7);
+    this.add.text(400, 50, 'Hallgasd a számokat!', retroStyle).setFontSize('32px').setOrigin(0.5);
+    roundText = this.add.text(30, 30, `${currentRound}/${totalRounds}`, retroStyle).setFontSize('32px');
 
     // Digital-style input display
     inputDisplay = this.add.text(400, 100, '', retroStyle).setFontSize('32px').setOrigin(0.5);
@@ -69,7 +62,7 @@ function startGame() {
     currentIndex = 0;
 
     // Generate a sequence based on the current round
-    for (let i = 0; i < 5 + currentRound - 1; i++) {
+    for (let i = 0; i < 5; i++) {
         numberSequence.push(Phaser.Math.Between(1, 9));
     }
 
@@ -114,7 +107,6 @@ function createNumberButton(scene, x, y, text) {
     let buttonText = scene.add.text(x, y, text, buttonStyle)
         .setOrigin(0.5);
 
-
     // Hover effect with smooth transition
     buttonRect.on('pointerover', function() {
         scene.tweens.killTweensOf(this); // Stop any tweens on this container
@@ -136,29 +128,38 @@ function createNumberButton(scene, x, y, text) {
     });
 
     buttonRect.on('pointerdown', () => {
-        if (!inputEnabled) return;  // Prevent input if not enabled
-
+        if (!inputEnabled) return;
+    
         if (text === 'C') {
             inputSequence = [];
-            updateInputDisplay();
         } else if (text === 'OK') {
-            const result = JSON.stringify(inputSequence) === JSON.stringify(numberSequence);
-            if (result) {
-                currentRound++;  // Move to the next round
-                scene.create();  // Reinitialize the scene for the next round
+            if (JSON.stringify(inputSequence) === JSON.stringify(numberSequence)) {
+                // Player got the correct sequence
+                if (currentRound === totalRounds) {
+                    // Player has completed all rounds, move to the end scene
+                    scene.registry.set('result', true);
+                    scene.scene.start('EndScene');
+                } else {
+                    // Move to the next round
+                    currentRound++;
+                    startGame.call(scene);
+                }
             } else {
-                scene.registry.set('result', result);
+                // Incorrect sequence, move to end scene
+                scene.registry.set('result', false);
                 scene.scene.start('EndScene');
             }
         } else {
             inputSequence.push(parseInt(text));
-            updateInputDisplay();
         }
+
+        updateInputDisplay();
     });
 }
 
 function updateInputDisplay() {
     inputDisplay.text = inputSequence.join(' ');
+    roundText.setText(`${currentRound}/${totalRounds}`);
 }
 
 function playNextNumber() {

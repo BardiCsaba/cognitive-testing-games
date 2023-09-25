@@ -76,7 +76,7 @@ function create() {
     button.setInteractive(new Phaser.Geom.Rectangle(300, 425, 200, 50), Phaser.Geom.Rectangle.Contains);
 
     // Add button text
-    const buttonText = this.add.text(400, 450, 'Indítás', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
+    const buttonText = this.add.text(400, 450, 'Start', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
     buttonText.setOrigin(0.5, 0.5);  // Centered
 
     // Add hover effect

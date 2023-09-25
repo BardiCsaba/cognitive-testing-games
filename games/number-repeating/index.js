@@ -16,8 +16,22 @@ export function initialize(params) {
         },
     };
 
+    const retroStyle = {
+        fontSize: '26px',
+        fill: '#A8FF98',  // Retro greenish color
+        fontFamily: 'Courier New',
+        shadow: {
+            offsetX: 0,
+            offsetY: 0,
+            color: '#A8FF98',  // Glow effect
+            blur: 8,
+            fill: true
+        }
+    };
+
     // Create the Phaser game instance
     let game = new Phaser.Game(config);
     game.registry.set('params', params);
-    game.scene.start('MainScene');
+    game.registry.set('retrostyle', retroStyle);
+    game.scene.start('StartScene');
 }
