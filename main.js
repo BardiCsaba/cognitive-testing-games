@@ -27,7 +27,7 @@ function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'number-repeating', 
+		gameName: 'cosmic-sequence', 
 		//cosmic-sequence
 		//balloon-pop
 		//number-repeating
@@ -44,3 +44,20 @@ const params = mockFetchParams(); // or real fetch from backend
 
 // Initialize a specific game
 initializeGame(params);
+
+document.getElementById('fullscreen-btn').addEventListener('click', () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        let gameContainer = document.getElementById('game-container');
+        if (gameContainer.requestFullscreen) {
+            gameContainer.requestFullscreen();
+        } else if (gameContainer.msRequestFullscreen) { /* IE/Edge */
+            gameContainer.msRequestFullscreen();
+        } else if (gameContainer.mozRequestFullScreen) { /* Firefox */
+            gameContainer.mozRequestFullScreen();
+        } else if (gameContainer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            gameContainer.webkitRequestFullscreen();
+        }
+    }
+});

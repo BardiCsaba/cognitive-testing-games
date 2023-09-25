@@ -16,11 +16,32 @@ header h1 {
 
 /* Style the game container */
 #game-container {
+    position: relative;
+    overflow: hidden;
     width: 800px;
     height: 600px;
     margin: 20px auto;
     border: 3px solid #555;
     border-radius: 10px;
     box-shadow: 0px 0px 20px #000;
-    background-color: rgba(255, 255, 255, 0.8);  /* Semi-transparent background */
+    background-color: black;
+}
+
+#fullscreen-btn {
+    position: absolute;
+    z-index: 1000;
+    top: 10px;
+    right: 10px;
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 24px; /* Adjust to your preferred icon size */
+    outline: none;
+}
+
+#fullscreen-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }

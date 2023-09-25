@@ -10,6 +10,10 @@ export function initialize(params) {
         width: 800,
         height: 600,
         scene: [StartScene, MainScene, EndScene],
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },
     };
 
     // Create the Phaser game instance

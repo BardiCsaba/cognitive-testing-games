@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Játék gyüjtemény</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script defer type="module" src="common/helpers.js"></script>
     <script defer type="module" src="main.js"></script>
@@ -13,8 +14,9 @@
         <h1 id="header">Játék gyüjtemény</h1>
     </header>
     <main>
-        <div id="game-container">
+        <div id="game-container" style="position: relative;">
             <!-- Phaser games will be initialized here -->
+            <button id="fullscreen-btn" title="Teljes képernyő"><i class="fas fa-expand"></i></button>
         </div>
     </main>
     <footer>
