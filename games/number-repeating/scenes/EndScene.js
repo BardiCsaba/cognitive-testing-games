@@ -5,6 +5,7 @@ export const EndScene = {
 };
 
 let retroStyle;
+let soundSettings;
 
 function preload() {
     this.load.setBaseURL('games/number-repeating/assets/');
@@ -13,15 +14,13 @@ function preload() {
 
 function create() {
     retroStyle = this.registry.get('retrostyle');
+    soundSettings = this.registry.get('soundSettings');
 
     this.add.image(400, 300, 'background').setScale(1.7);
 
     // Check result
     const result = this.registry.get('result');
-    const resultText = result ? 
-        "Gratulálok! Sikerült!" :  // Hungarian for "Congratulations! You succeeded!"
-        "Sajnálom, próbáld újra!"; // Hungarian for "Sorry, try again!"
-
+    const resultText = result ? "Gratulálok! Sikerült!" : "Sajnálom, próbáld újra!";
     this.add.text(400, 200, resultText, retroStyle).setFontSize('32px').setOrigin(0.5);
 
     // Create a "Restart" button
@@ -63,6 +62,7 @@ function createRestartButton(scene, x, y, text) {
     });
 
     buttonRect.on('pointerdown', () => {
+        scene.sound.play('click', soundSettings);
         scene.scene.start('StartScene');
     });
 }

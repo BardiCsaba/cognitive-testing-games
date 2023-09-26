@@ -5,16 +5,19 @@ export const StartScene = {
 };
 
 let retroStyle;
+let soundSettings;
 
 function preload() {
     this.load.setBaseURL('games/number-repeating/assets/');
     this.load.image('background', 'background.jpg');
+    this.load.audio('click', ['click.wav'])
 }
 
 function create() {
     retroStyle = this.registry.get('retrostyle');
-    this.add.image(400, 300, 'background').setScale(1.7);
+    soundSettings = this.registry.get('soundSettings');
 
+    this.add.image(400, 300, 'background').setScale(1.7);
     this.add.text(400, 180, 'Egy számokból álló sorozatot fogsz hallani.', retroStyle).setOrigin(0.5);
     this.add.text(400, 240, 'Probáld meg a legjobb emlékezeted szerint beírni!', retroStyle).setOrigin(0.5);
     this.add.text(400, 300, 'Készen állsz?', retroStyle).setOrigin(0.5);
@@ -58,6 +61,7 @@ function createStartButton(scene, x, y, text) {
     });
 
     buttonRect.on('pointerdown', () => {
+        scene.sound.play('click', soundSettings);
         scene.scene.start('MainScene');
     });
 }

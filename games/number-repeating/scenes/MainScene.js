@@ -7,16 +7,21 @@ export const MainScene = {
 
 // Game variables
 let currentRound;
-let totalRounds = 5;
-let inputEnabled = false;
+let totalRounds = 2;
+let inputEnabled;
 let numberSequence = [];
 let inputSequence = [];
 let currentIndex = 0;
+let TIME_BETWEEN_NUMBERS = 1500;
 
 // Game objects
 let inputDisplay;
-let retroStyle;
 let roundText;
+let instructionText;
+
+// Game settings
+let retroStyle;
+let soundSettings;
 
 function preload() {
     this.load.setBaseURL('games/number-repeating/assets/');
@@ -24,16 +29,21 @@ function preload() {
     for (let i = 1; i <= 9; i++) {
         this.load.audio(`${i}`, [`${i}.mp3`]);
     }
+    this.load.audio('click', ['click.wav'])
+    this.load.audio('game_over', ['game_over.wav'])
+    this.load.audio('win', ['win.wav'])
 
     this.load.image('background', 'background.jpg');
 }
 
 function create() {
     retroStyle = this.registry.get('retrostyle');
+    soundSettings = this.registry.get('soundSettings');
     currentRound = 1;
+    inputEnabled = false;
 
     this.add.image(400, 300, 'background').setScale(1.7);
-    this.add.text(400, 50, 'Hallgasd a számokat!', retroStyle).setFontSize('32px').setOrigin(0.5);
+    instructionText = this.add.text(400, 50, 'Hallgasd a számokat!', retroStyle).setFontSize('32px').setOrigin(0.5);
     roundText = this.add.text(30, 30, `${currentRound}/${totalRounds}`, retroStyle).setFontSize('32px');
 
     // Digital-style input display
@@ -60,6 +70,7 @@ function startGame() {
     numberSequence = [];
     inputSequence = [];
     currentIndex = 0;
+    inputEnabled = false;
 
     // Generate a sequence based on the current round
     for (let i = 0; i < 5; i++) {
@@ -67,13 +78,14 @@ function startGame() {
     }
 
     // After the sequence playback, enable input
-    this.time.delayedCall(1000 * numberSequence.length, () => {
+    this.time.delayedCall((TIME_BETWEEN_NUMBERS * numberSequence.length + 1) + 1000, () => {
         inputEnabled = true;
+        updateDisplay();
     });
 
     // Initialize the timer
     const timer = this.time.addEvent({
-        delay: 1000,
+        delay: TIME_BETWEEN_NUMBERS,
         callback: playNextNumber,
         callbackScope: this,
         repeat: numberSequence.length - 1
@@ -129,37 +141,48 @@ function createNumberButton(scene, x, y, text) {
 
     buttonRect.on('pointerdown', () => {
         if (!inputEnabled) return;
-    
+      
         if (text === 'C') {
             inputSequence = [];
+            scene.sound.play('click', soundSettings);
         } else if (text === 'OK') {
             if (JSON.stringify(inputSequence) === JSON.stringify(numberSequence)) {
                 // Player got the correct sequence
                 if (currentRound === totalRounds) {
                     // Player has completed all rounds, move to the end scene
                     scene.registry.set('result', true);
+                    scene.sound.play('win', soundSettings);
                     scene.scene.start('EndScene');
                 } else {
                     // Move to the next round
                     currentRound++;
+                    scene.sound.play('win', soundSettings);
                     startGame.call(scene);
+                    updateDisplay();
                 }
             } else {
                 // Incorrect sequence, move to end scene
                 scene.registry.set('result', false);
+                scene.sound.play('game_over', soundSettings);
                 scene.scene.start('EndScene');
             }
         } else {
+            scene.sound.play('click', soundSettings);
             inputSequence.push(parseInt(text));
         }
-
-        updateInputDisplay();
+        updateDisplay();
     });
 }
 
-function updateInputDisplay() {
+function updateDisplay() {
     inputDisplay.text = inputSequence.join(' ');
     roundText.setText(`${currentRound}/${totalRounds}`);
+
+    if (inputEnabled) {
+        instructionText.setText('Írd be a számokat!');
+    } else {
+        instructionText.setText('Hallgasd a számokat!');
+    }
 }
 
 function playNextNumber() {
@@ -171,4 +194,5 @@ function playNextNumber() {
 }
 
 function update() {
+    // Nothing here yet
 }

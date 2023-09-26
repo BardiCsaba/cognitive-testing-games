@@ -29,9 +29,14 @@ export function initialize(params) {
         }
     };
 
+    const soundSettings = {
+        volume: 0.3
+    };
+
     // Create the Phaser game instance
     let game = new Phaser.Game(config);
     game.registry.set('params', params);
     game.registry.set('retrostyle', retroStyle);
+    game.registry.set('soundSettings', soundSettings);
     game.scene.start('StartScene');
 }
