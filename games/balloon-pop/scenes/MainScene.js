@@ -8,31 +8,20 @@ export const MainScene = {
 // Constants
 const balloonTypes = ['balloon_red', 'balloon_green', 'balloon_blue', 'balloon_orange', 'balloon_black'];
 
-// Parameters
-let MAX_BALLOONS;
-let MIN_SPEED;
-let MAX_SPEED;
-let MAX_HEALTH_POINTS;
-let LEVEL;
-let GAME_TIME;
-
 // Game variables
-let params;
 let gameParams;
 let balloons;
-let score = 0;
+let score;
 let counter;
-let occupiedPositions = [];
-let lifePoints;
+let occupiedPositions;
+let healthPoints;
 
 // Game objects
-let lifeBar;
-let lifeText;
+let healthBar;
+let healthText;
 let scoreText;
 let counterText;
 
-
-// Preload assets
 function preload() {
     this.load.setBaseURL('games/balloon-pop/assets/');
     this.load.image('background', 'background.png');
@@ -41,20 +30,11 @@ function preload() {
 }
 
 function getGameParameters() {
-    params = this.registry.get('params');
     gameParams = this.registry.get('gameParams');
-    
-    LEVEL = params ? params.level : 1; 
-    MAX_BALLOONS = gameParams.maxBalloons;  
-    MIN_SPEED = gameParams.minSpeed;  
-    MAX_SPEED = gameParams.maxSpeed;
-    MAX_HEALTH_POINTS = gameParams.maxHealthPoints;
-    GAME_TIME = gameParams.gameTime;
-
-    lifePoints = MAX_HEALTH_POINTS;
-    counter = GAME_TIME;
-
-    console.log(`Level: ${LEVEL}\nMax balloons: ${MAX_BALLOONS}\nMin speed: ${MIN_SPEED}\nMax speed: ${MAX_SPEED}\nHealth points: ${MAX_HEALTH_POINTS}\nGame time: ${GAME_TIME}`);
+    healthPoints = gameParams.maxHealthPoints;
+    counter = gameParams.gameTime;
+    score = 0;
+    occupiedPositions = [];
 }
 
 // Create scene and spawn balloons
@@ -70,26 +50,26 @@ function create() {
     this.input.topOnly = true;
     
     // Spawn initial set of balloons
-    for (let i = 0; i < MAX_BALLOONS; i++) {
+    for (let i = 0; i < gameParams.maxBalloons; i++) {
         spawnBalloon(this);
     }				
 
-    // Add background shade for better visibility of the score and life bar
+    // Add background shade for better visibility of the score and health bar
     let hudBackground = this.add.graphics();
     hudBackground.fillStyle(0x000000, 0.6);  // Black with 60% opacity
     hudBackground.fillRect(10, 10, 780, 50); // x, y, width, height
 
-    // Initialize life bar
-    lifeBar = this.add.graphics();
-    lifeBar.fillStyle(0x00FF00, 1);
-    lifeBar.fillRect(630, 20, lifePoints * 1.5, 30);
+    // Initialize health bar
+    healthBar = this.add.graphics();
+    healthBar.fillStyle(0x00FF00, 1);
+    healthBar.fillRect(630, 20, healthPoints * 1.5, 30);
 
-    // Initialize score and life text
-    lifeText = this.add.text(520, 20, 'Élet:', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
+    // Initialize score and health text
+    healthText = this.add.text(520, 20, 'Élet:', { fontSize: '32px', fill: '#fff', fontStyle: 'bold' });
     scoreText = this.add.text(16, 20, 'Pont: 0', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     
     // Add level text
-    this.add.text(10, 560, `Szint: ${LEVEL}`, {
+    this.add.text(10, 560, `Szint: ${gameParams.level}`, {
          fontSize: '28px',
          fill: '#fff', 
          fontStyle: 'bold',
@@ -155,7 +135,7 @@ function spawnBalloon(scene) {
 }
 
 function calculateSpeed() {
-    return Phaser.Math.Between(MIN_SPEED, MAX_SPEED);   
+    return Phaser.Math.Between(gameParams.minSpeed, gameParams.maxSpeed);   
 }
 
 // Check for balloon pop when clicked
@@ -175,8 +155,8 @@ function popBalloonOnPointerDown(scene, pointer) {
 function popBalloon(scene, balloon) {
     // Handle the black balloon differently
     if (balloon.texture.key === 'balloon_black') {
-        lifePoints -= 10;
-        updateLifeBar();
+        healthPoints -= 10;
+        updateHealthBar();
         
         // Trigger the explosion animation at the balloon's position
         let explosion = scene.add.sprite(balloon.x, balloon.y, 'explosion');
@@ -186,8 +166,8 @@ function popBalloon(scene, balloon) {
             explosion.destroy();
         });
 
-        // If life points run out, game over
-        if (lifePoints <= 0) {
+        // If health points run out, game over
+        if (healthPoints <= 0) {
             scene.registry.set('finalScore', score);
             scene.scene.start('EndScene');
         }
@@ -212,11 +192,11 @@ function popBalloon(scene, balloon) {
     scoreText.setText(`Pont: ${score}`);
 }
 
-// Update the graphical representation of the life bar
-function updateLifeBar() {
-    lifeBar.clear();
-    lifeBar.fillStyle(lifePoints > 40 ? 0x00FF00 : 0xFF0000, 1);
-    lifeBar.fillRect(630, 20, lifePoints * 1.5, 30);
+// Update the graphical representation of the health bar
+function updateHealthBar() {
+    healthBar.clear();
+    healthBar.fillStyle(healthPoints > 40 ? 0x00FF00 : 0xFF0000, 1);
+    healthBar.fillRect(630, 20, healthPoints * 1.5, 30);
 }
 
 
@@ -257,7 +237,7 @@ function generateUniquePosition() {
     };
 
     // Optionally: Remove the oldest balloon to free up space
-    if (occupiedPositions.length > MAX_BALLOONS) {
+    if (occupiedPositions.length > gameParams.maxBalloons) {
         const oldestPosition = occupiedPositions.shift();
         const oldSegment = segments.find(segment => oldestPosition.x >= segment.xStart && oldestPosition.x <= segment.xEnd);
         if (oldSegment) {

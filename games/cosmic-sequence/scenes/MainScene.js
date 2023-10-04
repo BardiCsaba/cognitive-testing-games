@@ -5,20 +5,12 @@ export const MainScene = {
     update,
 };
 
-// Parameters
-let MAX_ROUND;
-let MIN_ASTEROID_COUNT;
-let MAX_ASTEROID_COUNT;
-let MAX_HEALTH_POINTS;
-let NUMBERS_VISIBALITY_DURATION;
-let LEVEL;
-
 // Game variables
-let params;
-let clickedOrder = [];
-let correctOrder = [];
-let round = 1;
-let newRound = false;
+let gameParams;
+let clickedOrder;
+let correctOrder;
+let round;
+let newRound;
 let healthPoints;
 
 // Game objects
@@ -27,7 +19,6 @@ let cross;
 let spaceShip;
 let asteroids;
 let roundText;
-let messageText;
 let healthText;
 let background1;
 let background2;
@@ -46,17 +37,12 @@ function preload() {
 }
 
 function getGameParameters() {
-    params = this.registry.get('params');
-    LEVEL = params ? params.level : 1; // Default to level 1 if not specified
-    
-    MAX_ROUND = 5 + Math.floor(LEVEL / 5) * 5; // Starts at 5, increases by 5 every 5 levels
-    MIN_ASTEROID_COUNT = 3;
-    MAX_ASTEROID_COUNT = 3 + Math.floor(LEVEL / 5); // Starts at 3, increases by 1 every 5 levels
-    MAX_HEALTH_POINTS = 5 - Math.floor(LEVEL / 5); // Starts at 5, decreases by 1 every 5 levels
-    NUMBERS_VISIBALITY_DURATION = 5000 - Math.floor(LEVEL / 5) * 500; // Starts at 5000, decreases by 500 every 5 levels
-
-    healthPoints = MAX_HEALTH_POINTS;
-    console.log(`Level: ${LEVEL}\nMax round: ${MAX_ROUND}\nMin asteroid count: ${MIN_ASTEROID_COUNT}\nMax asteroid count: ${MAX_ASTEROID_COUNT}\nHealth points: ${MAX_HEALTH_POINTS}\nNumbers visibality duration: ${NUMBERS_VISIBALITY_DURATION}`);
+    gameParams = this.registry.get('gameParams');
+    healthPoints = gameParams.maxHealthPoints;
+    clickedOrder = [];
+    correctOrder = [];
+    round = 1;
+    newRound = false;
 }
 
 function create() {
@@ -78,8 +64,7 @@ function create() {
         repeat: -1
     });
 
-    roundText = this.add.text(50, 50, `Kör: ${round}/${MAX_ROUND}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
-    messageText = this.add.text(400, 50, '', { fontSize: '32px', fill: '#fff', fontStyle: 'bold'}).setOrigin(0.5, 0);
+    roundText = this.add.text(50, 50, `Kör: ${round}/${gameParams.maxRound}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
     checkmark = this.add.image(400, 70, 'checkmark')
         .setVisible(false)
         .setScale(0.15);
@@ -90,9 +75,9 @@ function create() {
         .setScale(0.15)
 
     // Add level text
-    this.add.text(10, 560, `Szint: ${LEVEL}`, { fontSize: '28px', fill: '#fff', fontStyle: 'bold',});
+    this.add.text(10, 560, `Szint: ${gameParams.level}`, { fontSize: '28px', fill: '#fff', fontStyle: 'bold',});
     // Add Health Points text field
-    healthText = this.add.text(680, 50, `${healthPoints}/${MAX_HEALTH_POINTS}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
+    healthText = this.add.text(680, 50, `${healthPoints}/${gameParams.maxHealthPoints}`, { fontSize: '32px', fill: '#fff', fontStyle: 'bold'});
 
 
     // Add explosion animation
@@ -116,16 +101,16 @@ function hideAsteroidNumbers() {
         asteroid.setInteractive();  // Enable clicking on the asteroid
         cross.setVisible(false);
         checkmark.setVisible(false);
-        //messageText.setText('');
     });
 }
-
 
 function spawnNewAsteroids(count) {
     clickedOrder = [];
     correctOrder = [];
 
-    const uniqueNumbers = Phaser.Utils.Array.Shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, count);
+    const uniqueNumbers = Phaser.Utils.Array.NumberArray(0, gameParams.maxNumber - 1);
+    Phaser.Utils.Array.Shuffle(uniqueNumbers);
+    uniqueNumbers.splice(count);  // Remove the extra numbers
     uniqueNumbers.sort((a, b) => a - b);  // Sort in ascending order for checking later
 
     correctOrder = [...uniqueNumbers];  // Store the correct order
@@ -138,7 +123,7 @@ function spawnNewAsteroids(count) {
     }
 
     this.time.addEvent({
-        delay: NUMBERS_VISIBALITY_DURATION,
+        delay: gameParams.numbersVisibalityDuration,
         callback: hideAsteroidNumbers,
         callbackScope: this
     });
@@ -194,8 +179,6 @@ function spawnAsteroid(number, x, y) {
 
             if (isCorrect) {
                 //checkmark.setVisible(true);
-                //cross.setVisible(false);
-                //messageText.setText('Ügyes!');
 
                 this.tweens.add({
                     targets: [background1, background2],
@@ -203,16 +186,12 @@ function spawnAsteroid(number, x, y) {
                     duration: 2000, 
                     ease: 'Power2',
                     onComplete: () => {
-                        if (round < MAX_ROUND) {
+                        if (round < gameParams.maxRound) {
                             round++;
-                            roundText.setText(`Kör: ${round}/${MAX_ROUND}`);
+                            roundText.setText(`Kör: ${round}/${gameParams.maxRound}`);
                             newRound = true; // Set to true to allow spawning of new asteroids
                         } else {
-                            this.scene.start('EndScene');
-                            this.registry.set('gameWon', true);
-                            this.registry.set('remainingHealthPoints', healthPoints);
-                            this.registry.set('maxRound', MAX_ROUND);
-                            this.registry.set('finalRound', round);
+                            endGame.call(this, true);
                         }
                     }
                 });
@@ -221,23 +200,25 @@ function spawnAsteroid(number, x, y) {
                 cross.setVisible(true);
 
                 healthPoints -= 1;
-                healthText.setText(`${healthPoints}/${MAX_HEALTH_POINTS}`);
+                healthText.setText(`${healthPoints}/${gameParams.maxHealthPoints}`);
 
                 // Check if health points drop to zero
                 if (healthPoints <= 0) {
-                    this.registry.set('gameWon', false);
-                    this.registry.set('remainingHealthPoints', healthPoints);
-                    this.registry.set('maxRound', MAX_ROUND);
-                    this.registry.set('finalRound', round);
-                    this.scene.start('EndScene');
+                    endGame.call(this, false);
                 }
 
                 newRound = true; // Set to true to allow spawning of new asteroids
                 //checkmark.setVisible(false);
-                //messageText.setText('Rossz sorrend!');
             }
         }
     });
+}
+
+function endGame(gameWon) {
+    this.registry.set('gameWon', gameWon);
+    this.registry.set('remainingHealthPoints', healthPoints);
+    this.registry.set('finalRound', round);
+    this.scene.start('EndScene');
 }
 
 function update() {
@@ -258,7 +239,7 @@ function update() {
         if (round === 1) {
             randomAsteroidCount = 3;
         } else {
-            randomAsteroidCount = Phaser.Math.Between(MIN_ASTEROID_COUNT, MAX_ASTEROID_COUNT);
+            randomAsteroidCount = Phaser.Math.Between(gameParams.minAsteroidCount, gameParams.maxAsteroidCount);
         }
         
         spawnNewAsteroids.call(this, randomAsteroidCount); // Respawn a random number of asteroids

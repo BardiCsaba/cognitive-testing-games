@@ -6,9 +6,7 @@ export const StartScene = {
 };
 
 // Initialize variables
-let params;
-let level;
-let messageText;
+let gameParams;
 
 function preload() {
     this.load.setBaseURL('games/cosmic-sequence/assets/');
@@ -17,8 +15,7 @@ function preload() {
 
 function create() {
     // Get game parameters
-    params = this.registry.get('params');
-    level = params ? params.level : 1; // Default to level 1 if not specified
+    gameParams = this.registry.get('gameParams');
 
     this.add.image(400, 300, 'background').setScale(1.2);
 
@@ -56,7 +53,7 @@ function create() {
     });
 
     // Add level text
-    this.add.text(10, 560, `Szint: ${level}`, {
+    this.add.text(10, 560, `Szint: ${gameParams.level}`, {
         fontSize: '32px',
         fill: '#fff',
         fontStyle: 'bold',

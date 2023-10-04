@@ -6,8 +6,7 @@ export const EndScene = {
 };
 
 let finalScore;
-let params;
-let level;
+let gameParams;
 
 function preload() {
     this.load.setBaseURL('games/balloon-pop/assets/');
@@ -15,8 +14,7 @@ function preload() {
 }
 
 function create() {
-    params = this.registry.get('params');
-    level = params ? params.level : 1;
+    gameParams = this.registry.get('gameParams');
     finalScore = this.registry.get('finalScore');
 
     // Initialize background
@@ -30,7 +28,7 @@ function create() {
     // Add Game Over text and instructions
     this.add.text(30, 180, 'Játék Vége!', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', textAlign: 'center'});
     this.add.text(30, 280, `Végső pontszám: ${finalScore}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
-    this.add.text(30, 320, `Szint: ${level}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
+    this.add.text(30, 320, `Szint: ${gameParams.level}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
     
     // Create a restart button with graphics
     const button = this.add.graphics();

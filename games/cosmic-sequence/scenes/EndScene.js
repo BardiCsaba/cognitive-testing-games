@@ -7,11 +7,10 @@ export const EndScene = {
 
 // Initialize variables
 let finalRound;
-let maxRound;
 let remainingHealthPoints;
 let endMessage;
-let level;
-let params;
+let gameParams;
+let gameWon;
 
 function preload() {
     this.load.setBaseURL('games/cosmic-sequence/assets/');
@@ -20,14 +19,12 @@ function preload() {
 
 function create() {
     // Get game parameters
-    params = this.registry.get('params');
-    level = params ? params.level : 1;  // Default to level 1 if not specified
-
+    gameParams = this.registry.get('gameParams');
     finalRound = this.registry.get('finalRound');
     remainingHealthPoints = this.registry.get('remainingHealthPoints');
-    maxRound = this.registry.get('maxRound');
+    gameWon = this.registry.get('gameWon');
 
-    if (this.registry.get('gameWon')) {
+    if (gameWon) {
         endMessage = 'Nyertél!';
     } else {
         endMessage = 'Próbáld újra!';
@@ -37,7 +34,7 @@ function create() {
 
     // Display final score and life
     this.add.text(30, 180, endMessage, { fontSize: '48px', fill: '#fff', fontStyle: 'bold' });
-    this.add.text(30, 250, `Kör: ${finalRound}/${maxRound}`, { fontSize: '32px', fill: '#fff' });
+    this.add.text(30, 250, `Kör: ${finalRound}/${gameParams.maxRound}`, { fontSize: '32px', fill: '#fff' });
     this.add.text(30, 300, `Maradék élet: ${remainingHealthPoints}`, { fontSize: '32px', fill: '#fff' });
 
     // Create a restart button
