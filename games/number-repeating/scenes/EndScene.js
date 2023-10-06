@@ -1,3 +1,5 @@
+import { postResult } from '../../../common/common.js';
+
 export const EndScene = {
     key: 'EndScene',
     preload,
@@ -6,6 +8,7 @@ export const EndScene = {
 
 let retroStyle;
 let soundSettings;
+let gamePlayId;
 
 function preload() {
     this.load.setBaseURL('games/number-repeating/assets/');
@@ -15,16 +18,24 @@ function preload() {
 function create() {
     retroStyle = this.registry.get('retrostyle');
     soundSettings = this.registry.get('soundSettings');
+    gamePlayId = this.registry.get('gamePlayId');
 
     this.add.image(400, 300, 'background').setScale(1.7);
 
     // Check result
-    const result = this.registry.get('result');
-    const resultText = result ? "Gratulálok! Sikerült!" : "Sajnálom, próbáld újra!";
+    const gameResult = this.registry.get('gameResult');
+    const resultText = gameResult ? "Gratulálok! Sikerült!" : "Sajnálom, próbáld újra!";
     this.add.text(400, 200, resultText, retroStyle).setFontSize('32px').setOrigin(0.5);
 
     // Create a "Restart" button
-    createRestartButton(this, 400, 400, 'Újra'); // Hungarian for "Again"
+    createRestartButton(this, 400, 400, 'Újra');
+
+    const resultJson = {
+        gameResult: gameResult,
+        timestamp: Date.now(),
+        // ... any other data you want to send
+    };
+    postResult(resultJson, gamePlayId);
 }
 
 function createRestartButton(scene, x, y, text) {

@@ -6,13 +6,12 @@ export const MainScene = {
 };
 
 // Game variables
+let gameParams;
 let currentRound;
-let totalRounds = 2;
 let inputEnabled;
-let numberSequence = [];
-let inputSequence = [];
-let currentIndex = 0;
-let TIME_BETWEEN_NUMBERS = 1500;
+let numberSequence;
+let inputSequence;
+let currentIndex;
 
 // Game objects
 let inputDisplay;
@@ -37,6 +36,7 @@ function preload() {
 }
 
 function create() {
+    gameParams = this.registry.get('gameParams');
     retroStyle = this.registry.get('retrostyle');
     soundSettings = this.registry.get('soundSettings');
     currentRound = 1;
@@ -44,7 +44,7 @@ function create() {
 
     this.add.image(400, 300, 'background').setScale(1.7);
     instructionText = this.add.text(400, 50, 'Hallgasd a számokat!', retroStyle).setFontSize('32px').setOrigin(0.5);
-    roundText = this.add.text(30, 30, `${currentRound}/${totalRounds}`, retroStyle).setFontSize('32px');
+    roundText = this.add.text(30, 30, `${currentRound}/${gameParams.maxRound}`, retroStyle).setFontSize('32px');
 
     // Digital-style input display
     inputDisplay = this.add.text(400, 100, '', retroStyle).setFontSize('32px').setOrigin(0.5);
@@ -72,20 +72,22 @@ function startGame() {
     currentIndex = 0;
     inputEnabled = false;
 
+    let numberCount = Phaser.Math.Between(gameParams.minNumberCount, gameParams.maxNumberCount);
+
     // Generate a sequence based on the current round
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < numberCount; i++) {
         numberSequence.push(Phaser.Math.Between(1, 9));
     }
 
     // After the sequence playback, enable input
-    this.time.delayedCall((TIME_BETWEEN_NUMBERS * numberSequence.length + 1) + 1000, () => {
+    this.time.delayedCall((gameParams.timeBetweenNumbers * numberSequence.length + 1) + 1000, () => {
         inputEnabled = true;
         updateDisplay();
     });
 
     // Initialize the timer
     const timer = this.time.addEvent({
-        delay: TIME_BETWEEN_NUMBERS,
+        delay: gameParams.timeBetweenNumbers,
         callback: playNextNumber,
         callbackScope: this,
         repeat: numberSequence.length - 1
@@ -148,9 +150,9 @@ function createNumberButton(scene, x, y, text) {
         } else if (text === 'OK') {
             if (JSON.stringify(inputSequence) === JSON.stringify(numberSequence)) {
                 // Player got the correct sequence
-                if (currentRound === totalRounds) {
+                if (currentRound === gameParams.maxRound) {
                     // Player has completed all rounds, move to the end scene
-                    scene.registry.set('result', true);
+                    scene.registry.set('gameResult', true);
                     scene.sound.play('win', soundSettings);
                     scene.scene.start('EndScene');
                 } else {
@@ -162,7 +164,7 @@ function createNumberButton(scene, x, y, text) {
                 }
             } else {
                 // Incorrect sequence, move to end scene
-                scene.registry.set('result', false);
+                scene.registry.set('gameResult', false);
                 scene.sound.play('game_over', soundSettings);
                 scene.scene.start('EndScene');
             }
@@ -176,7 +178,7 @@ function createNumberButton(scene, x, y, text) {
 
 function updateDisplay() {
     inputDisplay.text = inputSequence.join(' ');
-    roundText.setText(`${currentRound}/${totalRounds}`);
+    roundText.setText(`${currentRound}/${gameParams.maxRound}`);
 
     if (inputEnabled) {
         instructionText.setText('Írd be a számokat!');

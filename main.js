@@ -1,18 +1,4 @@
-// main.js
-/*
-// Fetch game parameters from backend
-fetch('http://localhost:8080/api/game/params/balloon-pop')
-  .then(response => response.json())
-  .then(params => {
-    // Initialize game with parameters
-    initializeGame(params);
-  })
-  .catch(error => {
-    console.error('Error fetching game parameters:', error);
-  });
-*/
-
-function initializeGame(params) {
+export function initializeGame(params) {
 	
 	document.querySelector("header h1").innerText = params.gameTitle;
 
@@ -27,7 +13,7 @@ function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'cosmic-sequence', 
+		gameName: 'number-repeating', 
 		//cosmic-sequence
 		//balloon-pop
 		//number-repeating
@@ -35,7 +21,8 @@ function mockFetchParams() {
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
 		//Számismétlés
-		level: 1,
+		level: 5,
+        gamePlayId: 1,
 	};
 }
 
