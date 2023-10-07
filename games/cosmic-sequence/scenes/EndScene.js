@@ -1,3 +1,5 @@
+import { config } from '/common/config.js';
+
 export const EndScene = {
     key: 'EndScene',
     preload,
@@ -13,7 +15,7 @@ let gameParams;
 let gameWon;
 
 function preload() {
-    this.load.setBaseURL('games/cosmic-sequence/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/cosmic-sequence/assets/`);
     this.load.image('background', 'background.jpg');
 }
 

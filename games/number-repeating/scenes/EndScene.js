@@ -1,4 +1,5 @@
-import { postResult } from '../../../common/common.js';
+import { config } from '/common/config.js';
+import { postResult } from '/common/common.js';
 
 export const EndScene = {
     key: 'EndScene',
@@ -11,7 +12,7 @@ let soundSettings;
 let gamePlayId;
 
 function preload() {
-    this.load.setBaseURL('games/number-repeating/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/number-repeating/assets/`);
     this.load.image('background', 'background.jpg');
 }
 

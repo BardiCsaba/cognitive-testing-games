@@ -1,3 +1,4 @@
 export const config = {
-    baseURL: 'https://your.server.endpoint', //TODO
+    baseURL: '', //TODO
+    baseFolder: './assets/', //''
 };

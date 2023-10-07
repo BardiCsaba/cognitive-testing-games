@@ -1,3 +1,5 @@
+import { config } from '/common/config.js';
+
 export const StartScene = {
     key: 'StartScene',
     preload,
@@ -8,7 +10,7 @@ let retroStyle;
 let soundSettings;
 
 function preload() {
-    this.load.setBaseURL('games/number-repeating/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/number-repeating/assets/`);
     this.load.image('background', 'background.jpg');
     this.load.audio('click', ['click.wav'])
 }

@@ -1,3 +1,5 @@
+import { config } from '/common/config.js';
+
 export const MainScene = {
     key: 'MainScene',
     preload,
@@ -25,7 +27,7 @@ let background2;
 let heart;
 
 function preload() {
-    this.load.setBaseURL('games/cosmic-sequence/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/cosmic-sequence/assets/`);
     this.load.image('background1', 'background.jpg');
     this.load.image('background2', 'background.jpg');
     this.load.image('space-ship', 'space-ship.png');

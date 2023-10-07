@@ -1,3 +1,5 @@
+import { config } from '/common/config.js';
+
 export const StartScene = {
     key: 'StartScene',
     preload,
@@ -15,7 +17,7 @@ let healthText;
 let counterText;
 
 function preload() {
-    this.load.setBaseURL('games/balloon-pop/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/balloon-pop/assets/`);
     this.load.image('background', 'background.png');
 }
 

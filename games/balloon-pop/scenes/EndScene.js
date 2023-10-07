@@ -1,3 +1,5 @@
+import { config } from '/common/config.js';
+
 export const EndScene = {
     key: 'EndScene',
     preload,
@@ -9,7 +11,7 @@ let finalScore;
 let gameParams;
 
 function preload() {
-    this.load.setBaseURL('games/balloon-pop/assets/');
+    this.load.setBaseURL(`${config.baseFolder}games/balloon-pop/assets/`);
     this.load.image('background', 'background.png');
 }
 
