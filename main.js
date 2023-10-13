@@ -13,7 +13,8 @@ export function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'number-repeating', 
+		gameName: 'cosmic-control',
+		//cosmic-control
 		//cosmic-sequence
 		//balloon-pop
 		//number-repeating
