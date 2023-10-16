@@ -1,5 +1,4 @@
-import { config } from '/common/config.js';
-import { postResult } from '/common/common.js';
+import * as common from '../../../common/common.js';
 
 export const EndScene = {
     key: 'EndScene',
@@ -7,26 +6,20 @@ export const EndScene = {
     create
 };
 
-let retroStyle;
-let soundSettings;
-let gamePlayId;
+let userParams;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/number-repeating/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('number-repeating'));
     this.load.image('background', 'background.jpg');
 }
 
 function create() {
-    retroStyle = this.registry.get('retrostyle');
-    soundSettings = this.registry.get('soundSettings');
-    gamePlayId = this.registry.get('gamePlayId');
-
     this.add.image(400, 300, 'background').setScale(1.7);
 
     // Check result
     const gameResult = this.registry.get('gameResult');
     const resultText = gameResult ? "Gratulálok! Sikerült!" : "Sajnálom, próbáld újra!";
-    this.add.text(400, 200, resultText, retroStyle).setFontSize('32px').setOrigin(0.5);
+    this.add.text(400, 200, resultText, common.retroStyle).setFontSize('32px').setOrigin(0.5);
 
     // Create a "Restart" button
     createRestartButton(this, 400, 400, 'Újra');
@@ -36,7 +29,8 @@ function create() {
         timestamp: Date.now(),
         // ... any other data you want to send
     };
-    postResult(resultJson, gamePlayId);
+    userParams = this.registry.get('userParams');
+    common.postResult(resultJson, userParams.game_id, userParams.username, userParams.access_token);
 }
 
 function createRestartButton(scene, x, y, text) {
@@ -46,7 +40,7 @@ function createRestartButton(scene, x, y, text) {
         .setInteractive();
 
     let buttonStyle = {
-        ...retroStyle,
+        ...common.retroStyle,
         fontSize: '32px'
     };
 
@@ -74,7 +68,7 @@ function createRestartButton(scene, x, y, text) {
     });
 
     buttonRect.on('pointerdown', () => {
-        scene.sound.play('click', soundSettings);
+        scene.sound.play('click', common.soundSettings);
         scene.scene.start('StartScene');
     });
 }

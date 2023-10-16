@@ -1,4 +1,4 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const StartScene = {
     key: 'StartScene',
@@ -6,23 +6,17 @@ export const StartScene = {
     create
 };
 
-let retroStyle;
-let soundSettings;
-
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/number-repeating/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('number-repeating'));
     this.load.image('background', 'background.jpg');
     this.load.audio('click', ['click.wav'])
 }
 
 function create() {
-    retroStyle = this.registry.get('retrostyle');
-    soundSettings = this.registry.get('soundSettings');
-
     this.add.image(400, 300, 'background').setScale(1.7);
-    this.add.text(400, 180, 'Egy számokból álló sorozatot fogsz hallani.', retroStyle).setOrigin(0.5);
-    this.add.text(400, 240, 'Probáld meg a legjobb emlékezeted szerint beírni!', retroStyle).setOrigin(0.5);
-    this.add.text(400, 300, 'Készen állsz?', retroStyle).setOrigin(0.5);
+    this.add.text(400, 180, 'Egy számokból álló sorozatot fogsz hallani.', common.retroStyle).setOrigin(0.5);
+    this.add.text(400, 240, 'Probáld meg a legjobb emlékezeted szerint beírni!', common.retroStyle).setOrigin(0.5);
+    this.add.text(400, 300, 'Készen állsz?', common.retroStyle).setOrigin(0.5);
 
     // Create a "Start" button
     createStartButton(this, 400, 400, 'Start');
@@ -35,7 +29,7 @@ function createStartButton(scene, x, y, text) {
         .setInteractive();
 
     let buttonStyle = {
-        ...retroStyle,
+        ...common.retroStyle,
         fontSize: '32px'
     };
 
@@ -63,7 +57,7 @@ function createStartButton(scene, x, y, text) {
     });
 
     buttonRect.on('pointerdown', () => {
-        scene.sound.play('click', soundSettings);
+        scene.sound.play('click', common.soundSettings);
         scene.scene.start('MainScene');
     });
 }
