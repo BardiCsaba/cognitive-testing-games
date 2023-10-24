@@ -46,7 +46,7 @@ export function postResult(resultJson, game_id, username, access_token) {
     const endpointUrl = `${baseConfig.baseURL}/gameplay`;
 
     const requestBody = {
-        ...resultJson,
+        resultJson,  
         game_id: game_id,
         username: username
     };
@@ -56,11 +56,12 @@ export function postResult(resultJson, game_id, username, access_token) {
         'Authorization': `Bearer ${access_token}`
     };
 
-    console.log('--- Request Details ---');
-    console.log('Request URL:', endpointUrl);
-    console.log('Request Method:', 'POST');
-    console.log('Request Headers:', JSON.stringify(requestHeaders, null, 2));
-    console.log('Request Body:', JSON.stringify(requestBody, null, 2));
+    console.groupCollapsed('%cRequest Details', 'color: green; font-weight: bold;');
+    console.log('%cURL:', 'color: green;', endpointUrl);
+    console.log('%cMethod:', 'color: green;', 'POST');
+    console.log('%cHeaders:', 'color: green;', JSON.stringify(requestHeaders, null, 2));
+    console.log('%cBody:', 'color: green;', JSON.stringify(requestBody, null, 2));
+    console.groupEnd();
 
     fetch(endpointUrl, {
         method: 'POST',
@@ -69,10 +70,12 @@ export function postResult(resultJson, game_id, username, access_token) {
     })
     .then(response => response.json())
     .then(data => {
+        console.groupCollapsed('%cResponse Data', 'color: green; font-weight: bold;');
         console.log(data);
+        console.groupEnd();
     })
     .catch(error => {
-        console.error('Error posting data:', error);
+        console.error('%cError posting data:', 'color: red; font-weight: bold;', error);
     });
 }
 
