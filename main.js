@@ -13,7 +13,7 @@ export function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'number-repeating',
+		gameName: 'balloon-pop',
 		//cosmic-control
 		//cosmic-sequence
 		//balloon-pop
@@ -22,7 +22,7 @@ function mockFetchParams() {
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
 		//Számismétlés
-		level: 1,
+		level: 15,
         game_id: 1,
 		username: "testuser",
 		access_token: "testtoken"

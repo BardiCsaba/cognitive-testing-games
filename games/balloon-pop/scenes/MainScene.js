@@ -1,4 +1,4 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const MainScene = {
     key: 'MainScene',
@@ -25,7 +25,7 @@ let scoreText;
 let counterText;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/balloon-pop/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('balloon-pop'));
     this.load.image('background', 'background.png');
     balloonTypes.forEach(type => this.load.image(type, `${type}.png`));
     this.load.spritesheet('explosion', 'explosion.png', { frameWidth: 64, frameHeight: 64 });

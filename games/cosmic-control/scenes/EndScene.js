@@ -1,10 +1,9 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const EndScene = {
     key: 'EndScene',
     preload,
     create,
-    update,
 };
 
 // Initialize variables
@@ -12,7 +11,7 @@ let finalScore;
 let gameParams;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/cosmic-control/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('cosmic-control'));
     this.load.image('background', 'background.jpg');
 }
 
@@ -52,8 +51,4 @@ function create() {
     button.on('pointerdown', () => {
         this.scene.start('StartScene');
     });
-}
-
-function update() {
-    // Optional update logic
 }

@@ -1,10 +1,9 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const StartScene = {
     key: 'StartScene',
     preload,
     create,
-    update,
 };
 
 // Game variables
@@ -17,7 +16,7 @@ let healthText;
 let counterText;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/balloon-pop/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('balloon-pop'));
     this.load.image('background', 'background.png');
 }
 
@@ -90,8 +89,4 @@ function create() {
         stroke: '#888',
         strokeThickness: 2
     });
-}
-
-function update() {
-    // Optional update logic
 }

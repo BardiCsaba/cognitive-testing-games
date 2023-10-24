@@ -1,17 +1,16 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const EndScene = {
     key: 'EndScene',
     preload,
     create,
-    update,
 };
 
 let finalScore;
 let gameParams;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/balloon-pop/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('balloon-pop'));
     this.load.image('background', 'background.png');
 }
 
@@ -59,8 +58,4 @@ function create() {
     button.on('pointerdown', () => {
         this.scene.start('StartScene');
     });
-}
-
-function update() {
-    // Optional update logic
 }

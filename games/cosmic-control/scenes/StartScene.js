@@ -1,17 +1,16 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const StartScene = {
     key: 'StartScene',
     preload,
     create,
-    update,
 };
 
 // Initialize variables
 let gameParams;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/cosmic-control/assets`);
+    this.load.setBaseURL(common.getBaseFolder('cosmic-control'));
     this.load.image('background', 'background.jpg');
 }
 
@@ -63,8 +62,4 @@ function create() {
         fill: '#fff',
         fontStyle: 'bold',
     });
-}
-
-function update() {
-    // Optional update logic
 }

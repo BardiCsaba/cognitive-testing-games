@@ -1,41 +1,5 @@
 import { baseConfig } from '../common/config.js';
 
-// Base Game Configuration
-export const getBaseGameConfig = (scenes) => {
-    return {
-        type: Phaser.AUTO,
-        parent: 'game-container',
-        width: 800,
-        height: 600,
-        scene: scenes,
-        scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH
-        },
-    };
-};
-
-export const getBaseFolder = (gameName) => {
-    return `${baseConfig.baseFolder}games/${gameName}/assets/`;
-};
-
-export const createUserParams = (params) => {
-    return {
-        game_id: params.game_id,
-        username: params.username,
-        access_token: params.access_token,
-    };
-};
-
-export const defaultValuesFromLevel = (configFunc) => (level) => {
-    return configFunc(level);
-};
-
-// If the level is 0, use the given parameters, otherwise calculate default values based on the level and provided configFunc
-export const determineGameParams = (params, configFunc) => {
-    return params.level === 0 ? params : defaultValuesFromLevel(configFunc)(params.level || 1);
-};
-
 /* Send the gameplay result as a POST request.
  *
  * @param {Object} resultJson - The JSON result of the gameplay.
@@ -78,6 +42,61 @@ export function postResult(resultJson, game_id, username, access_token) {
         console.error('%cError posting data:', 'color: red; font-weight: bold;', error);
     });
 }
+
+// Initialize a specific game
+export function initialize(params, defaultValuesFunc, gameScenes) {
+    const gameParams = determineGameParams(params, defaultValuesFunc);
+    const gameConfig = getBaseGameConfig(gameScenes);
+    const userParams = createUserParams(params);
+
+    let game = new Phaser.Game(gameConfig);
+    game.registry.set('gameParams', gameParams);
+    game.registry.set('userParams', userParams);
+    game.scene.start('StartScene');
+    logGameParams(gameParams);
+}
+
+// Base Game Configuration
+export const getBaseGameConfig = (scenes) => {
+    return {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: 800,
+        height: 600,
+        scene: scenes,
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+    };
+};
+
+export const getBaseFolder = (gameName) => {
+    return `${baseConfig.baseFolder}games/${gameName}/assets/`;
+};
+
+export const createUserParams = (params) => {
+    return {
+        game_id: params.game_id,
+        username: params.username,
+        access_token: params.access_token,
+    };
+};
+
+export const defaultValuesFromLevel = (configFunc) => (level) => {
+    return configFunc(level);
+};
+
+// If the level is 0, use the given parameters, otherwise calculate default values based on the level and provided configFunc
+export const determineGameParams = (params, configFunc) => {
+    return params.level === 0 ? params : defaultValuesFromLevel(configFunc)(params.level || 1);
+};
+
+export const logGameParams = (gameParams) => {
+    console.groupCollapsed('%cGame Parameters', 'color: green; font-weight: bold;');
+    console.log(JSON.stringify(gameParams, null, 2));
+    console.groupEnd();
+};
 
 export const retroStyle = {
     fontSize: '26px',

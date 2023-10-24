@@ -1,4 +1,4 @@
-import { config } from '/common/config.js';
+import * as common from '../../../common/common.js';
 
 export const MainScene = {
     key: 'MainScene',
@@ -28,7 +28,7 @@ let speedIndicator;
 let scoreText;
 
 function preload() {
-    this.load.setBaseURL(`${config.baseFolder}games/cosmic-control/assets/`);
+    this.load.setBaseURL(common.getBaseFolder('cosmic-control'));
     this.load.image('background1', 'background.jpg');
     this.load.image('background2', 'background.jpg');
     this.load.image('space-ship', 'space-ship.png');
