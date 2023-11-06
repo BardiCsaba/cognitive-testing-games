@@ -2,15 +2,17 @@ import { baseConfig } from '../common/config.js';
 
 /* Send the gameplay result as a POST request.
  *
- * @param {Object} resultJson - The JSON result of the gameplay.
+ * @param {Object} gameResults - The JSON result of the gameplay.
+ * @param {Object} gameParams - The JSON of the gameParams.
  * @param {number|string} game_id - The game's ID.
  * @param {string} username - The username of the player.
+ * @param {string} access_token - The access token of the player.
  */
-export function postResult(resultJson, gameParams, game_id, username, access_token) {
+export function postResult(gameResults, gameParams, game_id, username, access_token) {
     const endpointUrl = `${baseConfig.baseURL}/gameplay`;
 
     const requestBody = {
-        resultJson,
+        gameResults,
         gameParams,  
         game_id: game_id,
         username: username

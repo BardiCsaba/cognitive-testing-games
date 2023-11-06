@@ -86,8 +86,15 @@ function startGame() {
 function generateOperationsSequence() {
     let numberCount = Phaser.Math.Between(gameParams.minNumberCount, gameParams.maxNumberCount);
     for (let i = 0; i < numberCount; i++) {
-        const operation = gameParams.operations[Phaser.Math.Between(0, gameParams.operations.length - 1)];
+        let operation = gameParams.operations[Phaser.Math.Between(0, gameParams.operations.length - 1)];
         const number = Phaser.Math.Between(gameParams.minNumber, gameParams.maxNumber);
+/*
+        if (operation === '-' && currentTotal - number < 0) {
+            operation = '+';
+        } else if (operation === '/' && currentTotal % number !== 0) {
+            operation = '*';
+        }
+  */      
         operationsSequence.push(operation + number);
     }
 }
