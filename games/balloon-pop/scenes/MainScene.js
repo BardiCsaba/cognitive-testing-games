@@ -13,16 +13,21 @@ const balloonTypes = ['balloon_red', 'balloon_green', 'balloon_blue', 'balloon_o
 // Game variables
 let gameParams;
 let balloons;
-let score;
 let counter;
 let occupiedPositions;
-let healthPoints;
+
 
 // Game objects
 let healthBar;
 let healthText;
 let scoreText;
 let counterText;
+
+// Game Results
+let mistakes = 0;
+let correct = 0;
+let score;
+let healthPoints;
 
 function preload() {
     this.load.setBaseURL(common.getBaseFolder('balloon-pop'));
@@ -82,7 +87,7 @@ function create() {
     // Update counter every second
     counterText = this.add.text(265, 20, 'Idő: 100', { fontSize: '32px', fill: '#fff' , fontStyle: 'bold' });
     this.time.addEvent({
-        delay: 1000, // 1000 milliseconds = 1 second
+        delay: 1000, // 1000 milliseconds
         callback: updateCounter,
         callbackScope: this,
         loop: true
@@ -100,6 +105,11 @@ function create() {
     this.input.on('pointerdown', pointer => popBalloonOnPointerDown(this, pointer));
 }
 
+// Update balloon positions
+function update() {
+    balloons.children.iterate(updateBalloonPosition);
+}
+
 // Function to update counter
 function updateCounter() {
     if (counter > 0) {
@@ -113,17 +123,19 @@ function updateCounter() {
     }
 }
 
-// Update balloon positions
-function update() {
-    balloons.children.iterate(updateBalloonPosition);
-}
-
 // Move balloon upwards
 function updateBalloonPosition(balloon) {
     balloon.y -= balloon.speed;
     if (balloon.y < -50) {
         resetBalloon(balloon);
     }
+}
+
+// Update the graphical representation of the health bar
+function updateHealthBar() {
+    healthBar.clear();
+    healthBar.fillStyle(healthPoints > 40 ? 0x00FF00 : 0xFF0000, 1);
+    healthBar.fillRect(630, 20, healthPoints * 1.5, 30);
 }
 
 // Spawn a new balloon
@@ -158,6 +170,7 @@ function popBalloon(scene, balloon) {
     // Handle the black balloon differently
     if (balloon.texture.key === 'balloon_black') {
         healthPoints -= 10;
+        mistakes++;
         updateHealthBar();
         
         // Trigger the explosion animation at the balloon's position
@@ -170,7 +183,15 @@ function popBalloon(scene, balloon) {
 
         // If health points run out, game over
         if (healthPoints <= 0) {
-            scene.registry.set('finalScore', score);
+            scene.registry.set('gameResults', { 
+                mistakes: mistakes, 
+                correct: correct, 
+                score: score,
+                healthPoints: healthPoints,
+                maxHealthPoints: gameParams.maxHealthPoints,
+                gameTime: gameParams.gameTime,
+                timeLeft: counter,
+            });
             scene.scene.start('EndScene');
         }
 
@@ -178,6 +199,7 @@ function popBalloon(scene, balloon) {
 
     } else {
         score += 10;
+        correct++;
         
         // Tweening effects for other balloons
         scene.tweens.add({
@@ -193,14 +215,6 @@ function popBalloon(scene, balloon) {
     // Update score display
     scoreText.setText(`Pont: ${score}`);
 }
-
-// Update the graphical representation of the health bar
-function updateHealthBar() {
-    healthBar.clear();
-    healthBar.fillStyle(healthPoints > 40 ? 0x00FF00 : 0xFF0000, 1);
-    healthBar.fillRect(630, 20, healthPoints * 1.5, 30);
-}
-
 
 // Reset balloon position and type
 function resetBalloon(balloon) {

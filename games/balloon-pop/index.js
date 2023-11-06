@@ -6,13 +6,14 @@ import { MainScene } from './scenes/MainScene.js';
 export function initialize(params) {
     // Define a function to calculate default values based on the level
     const defaultValuesFromLevel = (level) => {
+        const progression = Math.floor(level / 5);
         return {
             level: level,
-            maxBalloons: 2 + Math.floor(level / 5),
-            minSpeed: 2 + (level - 1) * 0.2,
-            maxSpeed: 2 + (level - 1) * 0.2 + 2,
-            maxHealthPoints: 100 - Math.floor(level / 5) * 10,
-            gameTime: 100 - Math.floor(level / 5) * 10
+            maxBalloons: 2 + progression,
+            minSpeed: 1 + (level - 1) * 0.1,
+            maxSpeed: 1 + (level - 1) * 0.1 + 1,
+            maxHealthPoints: 100 - progression * 10,
+            gameTime: 100 - progression * 10
         };
     };
 

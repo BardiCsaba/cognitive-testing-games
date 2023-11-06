@@ -8,6 +8,7 @@ export function initialize(params) {
     const defaultValuesFromLevel = (level) => {
         return {
             level: level,
+            maxRound: 5,
         };
     };
 

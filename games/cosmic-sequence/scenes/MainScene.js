@@ -217,9 +217,12 @@ function spawnAsteroid(number, x, y) {
 }
 
 function endGame(gameWon) {
-    this.registry.set('gameWon', gameWon);
-    this.registry.set('remainingHealthPoints', healthPoints);
-    this.registry.set('finalRound', round);
+    this.registry.set('gameResults', {
+        gameWon: gameWon,
+        round: round,
+        healthPoints: healthPoints,
+        maxHealthPoints: gameParams.maxHealthPoints,
+    });
     this.scene.start('EndScene');
 }
 

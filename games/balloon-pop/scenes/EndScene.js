@@ -6,8 +6,9 @@ export const EndScene = {
     create,
 };
 
-let finalScore;
+let gameResults;
 let gameParams;
+let userParams;
 
 function preload() {
     this.load.setBaseURL(common.getBaseFolder('balloon-pop'));
@@ -16,7 +17,7 @@ function preload() {
 
 function create() {
     gameParams = this.registry.get('gameParams');
-    finalScore = this.registry.get('finalScore');
+    gameResults = this.registry.get('gameResults');
 
     // Initialize background
     this.add.image(400, 300, 'background');
@@ -28,7 +29,7 @@ function create() {
     
     // Add Game Over text and instructions
     this.add.text(30, 180, 'Játék Vége!', { fontSize: '32px', fill: '#fff', fontStyle: 'bold', textAlign: 'center'});
-    this.add.text(30, 280, `Végső pontszám: ${finalScore}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
+    this.add.text(30, 280, `Végső pontszám: ${gameResults.score}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
     this.add.text(30, 320, `Szint: ${gameParams.level}`, { fontSize: '25px', fill: '#fff', fontStyle: 'bold'});
     
     // Create a restart button with graphics
@@ -58,4 +59,7 @@ function create() {
     button.on('pointerdown', () => {
         this.scene.start('StartScene');
     });
+
+    userParams = this.registry.get('userParams');
+    common.postResult(gameResults, gameParams, userParams.game_id, userParams.username, userParams.access_token);
 }

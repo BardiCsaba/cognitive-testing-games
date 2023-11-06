@@ -11,6 +11,8 @@ let finalRound;
 let remainingHealthPoints;
 let endMessage;
 let gameParams;
+let gameResults;
+let userParams;
 let gameWon;
 
 function preload() {
@@ -21,11 +23,11 @@ function preload() {
 function create() {
     // Get game parameters
     gameParams = this.registry.get('gameParams');
+    gameResults = this.registry.get('gameResults');
     finalRound = this.registry.get('finalRound');
     remainingHealthPoints = this.registry.get('remainingHealthPoints');
-    gameWon = this.registry.get('gameWon');
 
-    if (gameWon) {
+    if (gameResults.gameWon) {
         endMessage = 'Nyertél!';
     } else {
         endMessage = 'Próbáld újra!';
@@ -35,8 +37,8 @@ function create() {
 
     // Display final score and life
     this.add.text(30, 180, endMessage, { fontSize: '48px', fill: '#fff', fontStyle: 'bold' });
-    this.add.text(30, 250, `Kör: ${finalRound}/${gameParams.maxRound}`, { fontSize: '32px', fill: '#fff' });
-    this.add.text(30, 300, `Maradék élet: ${remainingHealthPoints}`, { fontSize: '32px', fill: '#fff' });
+    this.add.text(30, 250, `Kör: ${gameResults.round}/${gameParams.maxRound}`, { fontSize: '32px', fill: '#fff' });
+    this.add.text(30, 300, `Maradék élet: ${gameResults.healthPoints}`, { fontSize: '32px', fill: '#fff' });
 
     // Create a restart button
     const button = this.add.graphics();
@@ -64,4 +66,7 @@ function create() {
     button.on('pointerdown', () => {
         this.scene.start('StartScene');
     });
+
+    userParams = this.registry.get('userParams');
+    common.postResult(gameResults, gameParams, userParams.game_id, userParams.username, userParams.access_token);
 }

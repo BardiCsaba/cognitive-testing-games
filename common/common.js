@@ -6,11 +6,12 @@ import { baseConfig } from '../common/config.js';
  * @param {number|string} game_id - The game's ID.
  * @param {string} username - The username of the player.
  */
-export function postResult(resultJson, game_id, username, access_token) {
+export function postResult(resultJson, gameParams, game_id, username, access_token) {
     const endpointUrl = `${baseConfig.baseURL}/gameplay`;
 
     const requestBody = {
-        resultJson,  
+        resultJson,
+        gameParams,  
         game_id: game_id,
         username: username
     };
@@ -53,6 +54,7 @@ export function initialize(params, defaultValuesFunc, gameScenes) {
     game.registry.set('gameParams', gameParams);
     game.registry.set('userParams', userParams);
     game.scene.start('StartScene');
+    printTableForLevels(defaultValuesFunc, 10);
     logGameParams(gameParams);
 }
 
@@ -93,10 +95,51 @@ export const determineGameParams = (params, configFunc) => {
 };
 
 export const logGameParams = (gameParams) => {
-    console.groupCollapsed('%cGame Parameters', 'color: green; font-weight: bold;');
+    if (gameParams.level > 10) {
+        console.error("Too high level: ", gameParams.level)
+    }
+    //console.groupCollapsed('%cGame Parameters', 'color: green; font-weight: bold;');
     console.log(JSON.stringify(gameParams, null, 2));
-    console.groupEnd();
+    //console.groupEnd();
 };
+
+export const printTableForLevels = (configFunction, maxLevel) => {
+    // Fetch the first row to get headers
+    const firstRow = configFunction(1);
+    const headers = Object.keys(firstRow);
+
+    // Calculate max lengths for each column to ensure alignment
+    const maxLengths = headers.reduce((acc, header) => {
+        const maxDataLength = Math.max(...Array.from({length: maxLevel}, (_, i) => 
+            formatValue(configFunction(i + 1)[header]).length
+        ));
+        
+        acc[header] = Math.max(header.length, maxDataLength); // Choose the greater length
+        return acc;
+    }, {});
+
+    // Create and log header row
+    const headerRow = headers.map(header => header.padEnd(maxLengths[header] + 2)).join(' | ');
+    console.log(headerRow);
+
+    // Print each row of data
+    for (let i = 1; i <= maxLevel; i++) {
+        const rowData = configFunction(i);
+        const rowString = headers.map(header => 
+            formatValue(rowData[header]).padEnd(maxLengths[header] + 2)
+        ).join(' | ');
+        
+        console.log(rowString);
+    }
+};
+
+// Helper function to format value to 2 decimal places if it's a floating number
+function formatValue(value) {
+    if (typeof value === 'number' && !Number.isInteger(value)) {
+        return value.toFixed(2);
+    }
+    return String(value);
+}
 
 export const retroStyle = {
     fontSize: '26px',
