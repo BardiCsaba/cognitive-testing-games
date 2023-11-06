@@ -13,16 +13,17 @@ export function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'balloon-pop',
+		gameName: 'number-total',
 		//cosmic-control
 		//cosmic-sequence
 		//balloon-pop
 		//number-repeating
+		//number-total
 		gameTitle: 'Számismétlés', 
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
 		//Számismétlés
-		level: 15,
+		level: 10,
         game_id: 1,
 		username: "testuser",
 		access_token: "testtoken"
