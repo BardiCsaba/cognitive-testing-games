@@ -188,8 +188,6 @@ function popBalloon(scene, balloon) {
                 correct: correct, 
                 score: score,
                 healthPoints: healthPoints,
-                maxHealthPoints: gameParams.maxHealthPoints,
-                gameTime: gameParams.gameTime,
                 timeLeft: counter,
             });
             scene.scene.start('EndScene');

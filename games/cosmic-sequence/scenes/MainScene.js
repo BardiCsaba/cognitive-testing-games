@@ -221,7 +221,6 @@ function endGame(gameWon) {
         gameWon: gameWon,
         round: round,
         healthPoints: healthPoints,
-        maxHealthPoints: gameParams.maxHealthPoints,
     });
     this.scene.start('EndScene');
 }
