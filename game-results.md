@@ -8,6 +8,7 @@
 - `timeLeft`: Time remaining when the game concludes.
 
 ## Cosmic Control Results
+- `score`: Total score achieved in the game.
 
 ## Cosmic Sequence Results
 - `gameWon`: Indicates whether the game was won or not.

@@ -36,5 +36,3 @@
 - `maxNumber`: The highest number that can be displayed in the game.
 - `minNumber`: The lowest number that can be displayed in the game.
 - `operations`: Set of mathematical operations used, e.g., ['+', '-'].
-
-
