@@ -183,7 +183,7 @@ function popBalloon(scene, balloon) {
 
         // If health points run out, game over
         if (healthPoints <= 0) {
-            endGame.call(this);
+            endGame.call(scene);
         }
 
         resetBalloon(balloon);

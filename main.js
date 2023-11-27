@@ -13,7 +13,7 @@ export function initializeGame(params) {
 
 function mockFetchParams() {
 	return {
-		gameName: 'cosmic-sequence',
+		gameName: 'balloon-pop',
 		//cosmic-control
 		//cosmic-sequence
 		//balloon-pop
