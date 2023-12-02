@@ -19,6 +19,7 @@ let currentIndex;
 let inputDisplay;
 let roundText;
 let instructionText;
+let startTime, endTime, totalTime;
 
 function preload() {
     this.load.setBaseURL(common.getBaseFolder('number-repeating'));
@@ -37,6 +38,7 @@ function create() {
     gameParams = this.game.registry.get('gameParams');
     currentRound = 1;
     inputEnabled = false;
+    startTime, endTime, totalTime = 0;
 
     this.add.image(400, 300, 'background').setScale(1.7);
     instructionText = this.add.text(400, 50, 'Hallgasd a számokat!', common.retroStyle).setFontSize('32px').setOrigin(0.5);
@@ -78,6 +80,7 @@ function startGame() {
     // After the sequence playback, enable input
     this.time.delayedCall((gameParams.timeBetweenNumbers * numberSequence.length + 1) + 1000, () => {
         inputEnabled = true;
+        startTime = new Date().getTime();
         updateDisplay();
     });
 
@@ -148,9 +151,11 @@ function createNumberButton(scene, x, y, text) {
                 // Player got the correct sequence
                 if (currentRound === gameParams.maxRound) {
                     // Player has completed all rounds, move to the end scene
+                    calculateTime();
                     endGame(true, scene);
                 } else {
                     // Move to the next round
+                    calculateTime();
                     currentRound++;
                     scene.sound.play('win', common.soundSettings);
                     startGame.call(scene);
@@ -168,9 +173,18 @@ function createNumberButton(scene, x, y, text) {
     });
 }
 
+function calculateTime() {
+    // Calculate the time taken in ms
+    endTime = new Date().getTime();
+    let timeTaken = endTime - startTime;
+    totalTime += timeTaken;
+}
+
 function endGame(gameWon, scene) {
     scene.registry.set('gameResults', {
-        gameWon: gameWon
+        gameWon: gameWon,
+        round: currentRound,
+        totalTime: totalTime,
     });
     if (gameWon) {
         scene.sound.play('win', common.soundSettings);

@@ -23,7 +23,7 @@ function mockFetchParams() {
 		//Aszteroida sorrend 
 		//Lufi pukkasztó
 		//Számismétlés
-		level: 10,
+		level: 1,
         game_id: 1,
 		username: "testuser",
 		access_token: "testtoken"

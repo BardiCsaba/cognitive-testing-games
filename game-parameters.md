@@ -9,7 +9,7 @@
 - `minSpeed`: Minimum balloon speed, affects gameplay ease.
 - `maxSpeed`: Maximum balloon speed, adds variability.
 - `maxHealthPoints`: Maximum health points for player.
-- `gameTime`: Duration of a game or level in seconds, sets time limit.
+- `gameTime`: Duration of a game in seconds, sets time limit.
 
 ## Cosmic Control Parameters
 - `maxRound`: Defines the maximum number of rounds in the game.
